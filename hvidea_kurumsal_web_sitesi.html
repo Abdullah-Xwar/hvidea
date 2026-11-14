@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="tr" class="light scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HVIDEA | Abdullah Özdemir — Yazılım, Bilgisayar & PCB Tasarım (Bursa/Kestel)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        soft: {
+                            lightBg: '#F8F9FA',
+                            lightSurface: '#FFFFFF',
+                            lightMuted: '#F1F3F5',
+                            lightText: '#1E2229',
+                            lightSubtext: '#525866',
+                            darkBg: '#121418',
+                            darkSurface: '#1A1D24',
+                            darkMuted: '#22262F',
+                            darkText: '#E9ECEF',
+                            darkSubtext: '#9CA3AF',
+                            crimson: '#D9383A',
+                            crimsonHover: '#C22D30',
+                            coral: '#E04F52',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    animation: {
+                        'float-slow': 'floatSlow 7s ease-in-out infinite',
+                        'pulse-soft': 'pulseSoft 4s ease-in-out infinite',
+                        'shimmer': 'shimmer 3s linear infinite',
+                    },
+                    keyframes: {
+                        floatSlow: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        pulseSoft: {
+                            '0%, 100%': { opacity: '0.65', transform: 'scale(1)' },
+                            '50%': { opacity: '1', transform: 'scale(1.03)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Soft Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(217, 56, 58, 0.35);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(217, 56, 58, 0.65);
+        }
+
+        /* Soft Glassmorphism */
+        .nav-glass {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        /* Scroll Reveal Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Subtle PCB Grid Pattern */
+        .pcb-grid-light {
+            background-image: radial-gradient(rgba(217, 56, 58, 0.11) 1px, transparent 1px);
+            background-size: 26px 26px;
+        }
+        .pcb-grid-dark {
+            background-image: radial-gradient(rgba(224, 79, 82, 0.14) 1px, transparent 1px);
+            background-size: 26px 26px;
+        }
+
+        /* Card Lift & Soft Shadow */
+        .soft-card {
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+        }
+        .soft-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="bg-soft-lightBg text-soft-lightText dark:bg-soft-darkBg dark:text-soft-darkText font-sans antialiased transition-colors duration-500 overflow-x-hidden selection:bg-soft-crimson/20 selection:text-soft-crimson">
+
+    <!-- Subtle Ambient Background Canvas -->
+    <canvas id="ambientCanvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-60"></canvas>
+
+    <!-- Sticky Glassmorphic Header -->
+    <header id="navbar" class="fixed top-0 inset-x-0 z-50 nav-glass bg-soft-lightBg/85 dark:bg-soft-darkBg/85 border-b border-slate-200/80 dark:border-slate-800/80 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Brand Logo (Switches between Light & Dark Logo Variants cleanly) -->
+            <a href="#hero" class="flex items-center space-x-3 group focus:outline-none">
+                <div class="relative flex items-center bg-white dark:bg-[#16181E] px-3 py-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm group-hover:shadow-md transition-all duration-300">
+                    <!-- Light Mode Logo Image with Crisp SVG Fallback -->
+                    <img src="Ekran görüntüsü 2026-11-12 190719.jpg" 
+                         alt="HVIDEA Açık Tema Logosu" 
+                         class="h-10 sm:h-11 w-auto object-contain rounded-lg block dark:hidden"
+                         onerror="this.style.display='none'; document.getElementById('svgLogoLight').classList.remove('hidden');">
+                    
+                    <!-- Dark Mode Logo Image with Crisp SVG Fallback -->
+                    <img src="Ekran görüntüsü 2026-11-12 190745.jpg" 
+                         alt="HVIDEA Koyu Tema Logosu" 
+                         class="h-10 sm:h-11 w-auto object-contain rounded-lg hidden dark:block"
+                         onerror="this.style.display='none'; document.getElementById('svgLogoDark').classList.remove('hidden');">
+
+                    <!-- Fallback Polygonal Eye-Hand SVG (Light) -->
+                    <div id="svgLogoLight" class="hidden flex items-center space-x-2.5">
+                        <svg class="w-10 h-8" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="10,45 35,32 52,55 32,62" fill="#D9383A"/>
+                            <polygon points="10,45 32,62 24,68" fill="#1E2229"/>
+                            <polygon points="35,32 62,22 72,32 52,55" fill="#9CA3AF"/>
+                            <polygon points="62,22 85,18 80,28 72,32" fill="#D9383A"/>
+                            <polygon points="82,36 105,20 110,26 88,42" fill="#6B7280"/>
+                            <polygon points="88,44 112,30 116,36 92,50" fill="#D9383A"/>
+                            <polygon points="52,55 95,48 114,42 108,52 62,68" fill="#1E2229"/>
+                            <ellipse cx="64" cy="43" rx="16" ry="10" fill="#FFFFFF" stroke="#1E2229" stroke-width="3"/>
+                            <circle cx="64" cy="43" r="6" fill="#D9383A"/>
+                            <circle cx="66" cy="41" r="2" fill="#FFFFFF"/>
+                        </svg>
+                        <span class="font-black text-xl tracking-wider text-[#1E2229]">H<span class="text-[#D9383A]">V</span>IDEA</span>
+                    </div>
+
+                    <!-- Fallback Polygonal Eye-Hand SVG (Dark) -->
+                    <div id="svgLogoDark" class="hidden flex items-center space-x-2.5">
+                        <svg class="w-10 h-8" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="10,45 35,32 52,55 32,62" fill="#E04F52"/>
+                            <polygon points="10,45 32,62 24,68" fill="#374151"/>
+                            <polygon points="35,32 62,22 72,32 52,55" fill="#9CA3AF"/>
+                            <polygon points="62,22 85,18 80,28 72,32" fill="#E04F52"/>
+                            <polygon points="82,36 105,20 110,26 88,42" fill="#9CA3AF"/>
+                            <polygon points="88,44 112,30 116,36 92,50" fill="#E04F52"/>
+                            <polygon points="52,55 95,48 114,42 108,52 62,68" fill="#4B5563"/>
+                            <ellipse cx="64" cy="43" rx="16" ry="10" fill="#F3F4F6" stroke="#121418" stroke-width="3"/>
+                            <circle cx="64" cy="43" r="6" fill="#E04F52"/>
+                            <circle cx="66" cy="41" r="2" fill="#FFFFFF"/>
+                        </svg>
+                        <span class="font-black text-xl tracking-wider text-[#E9ECEF]">H<span class="text-[#E04F52]">V</span>IDEA</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center space-x-7">
+                <a href="#hero" class="text-sm font-medium text-soft-lightSubtext dark:text-soft-darkSubtext hover:text-soft-crimson dark:hover:text-soft-coral transition-colors">Ana Sayfa</a>
+                <a href="#services" class="text-sm font-medium text-soft-lightSubtext dark:text-soft-darkSubtext hover:text-soft-crimson dark:hover:text-soft-coral transition-colors">Hizmetler</a>
+                <a href="#featured-project" class="text-sm font-medium text-soft-lightSubtext dark:text-soft-darkSubtext hover:text-soft-crimson dark:hover:text-soft-coral transition-colors">OT1019 Projesi</a>
+                <a href="#recruitment" class="text-sm font-medium text-soft-crimson dark:text-soft-coral font-semibold transition-colors flex items-center gap-1.5">
+                    <span>Ekip İlanı</span>
+                    <span class="w-2 h-2 rounded-full bg-soft-crimson animate-ping"></span>
+                </a>
+                <a href="#about" class="text-sm font-medium text-soft-lightSubtext dark:text-soft-darkSubtext hover:text-soft-crimson dark:hover:text-soft-coral transition-colors">Amacım</a>
+                <a href="#contact" class="text-sm font-medium text-soft-lightSubtext dark:text-soft-darkSubtext hover:text-soft-crimson dark:hover:text-soft-coral transition-colors">İletişim</a>
+            </nav>
+
+            <!-- Right Controls: Theme Toggle, WhatsApp CTA, Mobile Drawer Button -->
+            <div class="flex items-center space-x-2.5 sm:space-x-3">
+                <!-- Soft Theme Toggle -->
+                <button id="themeToggle" aria-label="Tema Değiştir" class="p-2.5 rounded-2xl bg-soft-lightMuted dark:bg-soft-darkMuted text-soft-lightText dark:text-soft-darkText hover:bg-soft-crimson/10 hover:text-soft-crimson dark:hover:text-soft-coral border border-slate-200/80 dark:border-slate-700/70 transition-all duration-300 shadow-sm active:scale-95">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block text-amber-400"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden text-slate-700"></i>
+                </button>
+
+                <!-- WhatsApp Direct Button -->
+                <a href="https://wa.me/905518836334?text=Merhaba%20Abdullah%20Bey,%20HVIDEA%20hizmetleri%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex items-center space-x-2 px-4 py-2.5 rounded-2xl bg-soft-crimson hover:bg-soft-crimsonHover dark:bg-soft-coral dark:hover:bg-soft-crimson text-white font-semibold text-sm shadow-sm hover:shadow-md transition-all duration-300 active:scale-95">
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                    <span>0551 883 6334</span>
+                </a>
+
+                <!-- Mobile Hamburger Toggle -->
+                <button id="mobileMenuBtn" aria-label="Menüyü Aç" class="md:hidden p-2.5 rounded-2xl bg-soft-lightMuted dark:bg-soft-darkMuted text-soft-lightText dark:text-soft-darkText border border-slate-200/80 dark:border-slate-700/70 active:scale-95 transition-transform">
+                    <i data-lucide="menu" id="menuIconOpen" class="w-5 h-5 block"></i>
+                    <i data-lucide="x" id="menuIconClose" class="w-5 h-5 hidden"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Slide-Down Navigation Drawer -->
+        <div id="mobileMenu" class="hidden md:hidden bg-soft-lightSurface/95 dark:bg-soft-darkSurface/95 nav-glass border-b border-slate-200 dark:border-slate-800 px-5 pt-4 pb-6 space-y-3 shadow-xl">
+            <a href="#hero" class="mobile-link block py-2.5 px-3 rounded-xl text-base font-medium hover:bg-soft-lightMuted dark:hover:bg-soft-darkMuted transition-colors">Ana Sayfa</a>
+            <a href="#services" class="mobile-link block py-2.5 px-3 rounded-xl text-base font-medium hover:bg-soft-lightMuted dark:hover:bg-soft-darkMuted transition-colors">Hizmetlerimiz</a>
+            <a href="#featured-project" class="mobile-link block py-2.5 px-3 rounded-xl text-base font-medium hover:bg-soft-lightMuted dark:hover:bg-soft-darkMuted transition-colors">OT1019 Kızılötesi Röle Projesi</a>
+            <a href="#recruitment" class="mobile-link flex items-center justify-between py-2.5 px-3 rounded-xl text-base font-semibold bg-soft-crimson/10 text-soft-crimson dark:text-soft-coral">
+                <span>Ekip Arkadaşı İlanı (14-16 Yaş)</span>
+                <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-soft-crimson text-white">2 Kişi</span>
+            </a>
+            <a href="#about" class="mobile-link block py-2.5 px-3 rounded-xl text-base font-medium hover:bg-soft-lightMuted dark:hover:bg-soft-darkMuted transition-colors">Amacım & Hakkımda</a>
+            <a href="#contact" class="mobile-link block py-2.5 px-3 rounded-xl text-base font-medium hover:bg-soft-lightMuted dark:hover:bg-soft-darkMuted transition-colors">İletişim</a>
+            <div class="pt-2">
+                <a href="https://wa.me/905518836334?text=Merhaba%20Abdullah%20Bey,%20HVIDEA%20hizmetleri%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener noreferrer" class="flex items-center justify-center space-x-2 w-full py-3.5 rounded-2xl bg-soft-crimson text-white font-semibold text-sm shadow-md">
+                    <i data-lucide="message-circle" class="w-5 h-5"></i>
+                    <span>WhatsApp: 0551 883 6334</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="relative pt-28 pb-16 sm:pt-36 sm:pb-24 pcb-grid-light dark:pcb-grid-dark overflow-hidden">
+        <!-- Soft Ambient Radial Glows -->
+        <div class="absolute top-20 left-1/4 w-72 h-72 bg-soft-crimson/10 dark:bg-soft-coral/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-10 right-1/4 w-80 h-80 bg-slate-400/10 dark:bg-slate-700/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+                
+                <!-- Hero Left Text -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left reveal active">
+                    <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-soft-lightSurface dark:bg-soft-darkSurface border border-slate-200/90 dark:border-slate-800 shadow-sm text-xs sm:text-sm font-medium text-soft-lightSubtext dark:text-soft-darkSubtext">
+                        <span class="w-2 h-2 rounded-full bg-soft-crimson animate-pulse"></span>
+                        <span>Bursa / Kestel • Teknoloji, Donanım & Yazılım</span>
+                    </div>
+
+                    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15]">
+                        Yazılım, Donanım ve <br class="hidden sm:block">
+                        <span class="text-soft-crimson dark:text-soft-coral">Akıllı Mühendislik</span> Çözümleri
+                    </h1>
+
+                    <p class="text-base sm:text-lg text-soft-lightSubtext dark:text-soft-darkSubtext max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                        <strong>HVIDEA</strong> olarak; özel yazılım geliştirme, profesyonel bilgisayar tamiri ve bakımı ile maksimum 2 katmanlı istek PCB tasarımı alanlarında Bursa/Kestel merkezli güvenilir çözümler sunuyoruz.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
+                        <a href="#services" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-soft-crimson hover:bg-soft-crimsonHover dark:bg-soft-coral dark:hover:bg-soft-crimson text-white font-semibold text-sm sm:text-base shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2 active:scale-95">
+                            <span>Hizmetlerimizi Keşfet</span>
+                            <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
+                        </a>
+                        <a href="#featured-project" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-soft-lightSurface dark:bg-soft-darkSurface hover:bg-soft-lightMuted dark:hover:bg-soft-darkMuted text-soft-lightText dark:text-soft-darkText border border-slate-200 dark:border-slate-700/80 font-semibold text-sm sm:text-base shadow-sm transition-all duration-300 flex items-center justify-center space-x-2 active:scale-95">
+                            <i data-lucide="cpu" class="w-4 h-4 text-soft-crimson dark:text-soft-coral"></i>
+                            <span>OT1019 Röle Projesini Gör</span>
+                        </a>
+                    </div>
+
+                    <!-- Quick Info Strip -->
+                    <div class="pt-6 grid grid-cols-3 gap-4 border-t border-slate-200/80 dark:border-slate-800/80 max-w-lg mx-auto lg:mx-0">
+                        <div>
+                            <div class="text-lg sm:text-xl font-bold text-soft-lightText dark:text-soft-darkText">Max 2 Kat</div>
+                            <div class="text-xs text-soft-lightSubtext dark:text-soft-darkSubtext">Özel PCB Tasarımı</div>
+                        </div>
+                        <div>
+                            <div class="text-lg sm:text-xl font-bold text-soft-lightText dark:text-soft-darkText">Hızlı Servis</div>
+                            <div class="text-xs text-soft-lightSubtext dark:text-soft-darkSubtext">Tamir & Bakım</div>
+                        </div>
+                        <div>
+                            <div class="text-lg sm:text-xl font-bold text-soft-crimson dark:text-soft-coral">Kestel</div>
+                            <div class="text-xs text-soft-lightSubtext dark:text-soft-darkSubtext">Bursa Merkezli</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Right Showcase Card (Logo + Founder Card) -->
+                <div class="lg:col-span-5 flex justify-center reveal active">
+                    <div class="relative w-full max-w-md">
+                        <!-- Soft Floating Card -->
+                        <div class="animate-float-slow bg-soft-lightSurface dark:bg-soft-darkSurface rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-slate-800 shadow-xl relative overflow-hidden">
+                            <!-- Top Decorative Corner Accent matching logo -->
+                            <div class="absolute top-0 left-0 w-24 h-1.5 bg-gradient-to-r from-slate-800 via-soft-crimson to-transparent dark:from-slate-300 dark:via-soft-coral"></div>
+                            
+                            <!-- Logo Showcase Box -->
+                            <div class="rounded-2xl overflow-hidden bg-white dark:bg-[#121418] border border-slate-100 dark:border-slate-800/90 p-5 flex items-center justify-center shadow-inner mb-6">
+                                <img src="Ekran görüntüsü 2026-11-12 190719.jpg" alt="HVIDEA Logo" class="max-h-44 w-auto object-contain block dark:hidden rounded-xl">
+                                <img src="Ekran görüntüsü 2026-11-12 190745.jpg" alt="HVIDEA Logo Dark" class="max-h-44 w-auto object-contain hidden dark:block rounded-xl">
+                            </div>
+
+                            <!-- Founder & Location Info -->
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-xs uppercase tracking-wider text-soft-lightSubtext dark:text-soft-darkSubtext font-semibold">Kurucu & Geliştirici</p>
+                                        <h2 class="text-lg font-bold text-soft-lightText dark:text-soft-darkText">Abdullah Özdemir</h2>
+                                    </div>
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-soft-crimson/10 text-soft-crimson dark:bg-soft-coral/15 dark:text-soft-coral">
+                                        Bursa / Kestel
+                                    </span>
+                                </div>
+
+                                <a href="https://wa.me/905518836334?text=Merhaba%20Abdullah%20Bey,%20HVIDEA%20%C3%BCzerinden%20ula%C5%9F%C4%B1yorum." target="_blank" rel="noopener noreferrer" class="mt-2 w-full py-3 px-4 rounded-2xl bg-soft-lightMuted dark:bg-soft-darkMuted hover:bg-soft-crimson hover:text-white dark:hover:bg-soft-coral dark:hover:text-white text-soft-lightText dark:text-soft-darkText font-semibold text-sm transition-all duration-300 flex items-center justify-between group">
+                                    <span class="flex items-center space-x-2">
+                                        <i data-lucide="phone-call" class="w-4 h-4 text-soft-crimson dark:text-soft-coral group-hover:text-white transition-colors"></i>
+                                        <span>WhatsApp: 0551 883 6334</span>
+                                    </span>
+                                    <i data-lucide="external-link" class="w-4 h-4 opacity-70 group-hover:opacity-100"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section (Strictly: Yazılım, Bilgisayar Tamiri, Bilgisayar Bakımı, İstek PCB Tasarımı max 2 katmanlı) -->
+    <section id="services" class="py-20 sm:py-24 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto space-y-3 mb-14 reveal">
+                <span class="inline-block px-3.5 py-1 rounded-full bg-soft-crimson/10 text-soft-crimson dark:bg-soft-coral/15 dark:text-soft-coral text-xs font-semibold uppercase tracking-wider">
+                    Neler Yapıyoruz?
+                </span>
+                <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
+                    Uzmanlık Alanlarımız & Hizmetler
+                </h2>
+                <p class="text-sm sm:text-base text-soft-lightSubtext dark:text-soft-darkSubtext">
+                    İhtiyacınıza uygun yazılım, bilgisayar servisi ve özel elektronik devre tasarım çözümleri.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                <!-- 1. Yazılım -->
+                <div class="reveal soft-card bg-soft-lightSurface dark:bg-soft-darkSurface rounded-3xl p-7 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-soft-crimson/40 dark:hover:border-soft-coral/40 flex flex-col justify-between group">
+                    <div>
+                        <div class="w-13 h-13 w-12 h-12 rounded-2xl bg-soft-crimson/10 dark:bg-soft-coral/15 text-soft-crimson dark:text-soft-coral flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                            <i data-lucide="code-2" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2.5 group-hover:text-soft-crimson dark:group-hover:text-soft-coral transition-colors">Yazılım Geliştirme</h3>
+                        <p class="text-sm text-soft-lightSubtext dark:text-soft-darkSubtext leading-relaxed">
+                            İhtiyacınıza özel modern web siteleri, masaüstü uygulamalar, mikrodenetleyici yazılımları ve akıllı otomasyon çözümleri geliştiriyoruz.
+                        </p>
+                    </div>
+                    <div class="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span class="text-xs font-medium text-soft-lightSubtext dark:text-soft-darkSubtext">Özel Projeler</span>
+                        <a href="https://wa.me/905518836334?text=Merhaba,%20Yaz%C4%B1l%C4%B1m%20Geli%C5%9Ftirme%20hizmeti%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1 text-xs font-semibold text-soft-crimson dark:text-soft-coral hover:underline">
+                            <span>Bilgi Al</span>
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 2. Bilgisayar Tamiri -->
+                <div class="reveal soft-card bg-soft-lightSurface dark:bg-soft-darkSurface rounded-3xl p-7 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-soft-crimson/40 dark:hover:border-soft-coral/40 flex flex-col justify-between group">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-soft-crimson/10 dark:bg-soft-coral/15 text-soft-crimson dark:text-soft-coral flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                            <i data-lucide="wrench" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2.5 group-hover:text-soft-crimson dark:group-hover:text-soft-coral transition-colors">Bilgisayar Tamiri</h3>
+                        <p class="text-sm text-soft-lightSubtext dark:text-soft-darkSubtext leading-relaxed">
+                            Masaüstü ve dizüstü bilgisayarlarda donanım arıza tespiti, ekran/batarya/klavye değişimi, SSD yükseltme ve profesyonel onarım hizmetleri.
+                        </p>
+                    </div>
+                    <div class="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span class="text-xs font-medium text-soft-lightSubtext dark:text-soft-darkSubtext">Bursa / Kestel</span>
+                        <a href="https://wa.me/905518836334?text=Merhaba,%20Bilgisayar%20Tamiri%20hizmeti%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1 text-xs font-semibold text-soft-crimson dark:text-soft-coral hover:underline">
+                            <span>Servis Talebi</span>
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 3. Bilgisayar Bakımı -->
+                <div class="reveal soft-card bg-soft-lightSurface dark:bg-soft-darkSurface rounded-3xl p-7 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-soft-crimson/40 dark:hover:border-soft-coral/40 flex flex-col justify-between group">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-soft-crimson/10 dark:bg-soft-coral/15 text-soft-crimson dark:text-soft-coral flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                            <i data-lucide="sparkles" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2.5 group-hover:text-soft-crimson dark:group-hover:text-soft-coral transition-colors">Bilgisayar Bakımı</h3>
+                        <p class="text-sm text-soft-lightSubtext dark:text-soft-darkSubtext leading-relaxed">
+                            Yüksek performanslı termal macun yenileme, detaylı fan ve iç kasa toz temizliği, ısınma sorunlarının giderilmesi ve işletim sistemi optimizasyonu.
+                        </p>
+                    </div>
+                    <div class="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span class="text-xs font-medium text-soft-lightSubtext dark:text-soft-darkSubtext">Periyodik Bakım</span>
+                        <a href="https://wa.me/905518836334?text=Merhaba,%20Bilgisayar%20Bak%C4%B1m%C4%B1%20hizmeti%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1 text-xs font-semibold text-soft-crimson dark:text-soft-coral hover:underline">
+                            <span>Randevu Al</span>
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 4. İstek PCB Tasarımı (Max 2 Katmanlı) -->
+                <div class="reveal soft-card bg-soft-lightSurface dark:bg-soft-darkSurface rounded-3xl p-7 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-soft-crimson/40 dark:hover:border-soft-coral/40 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-5">
+                            <div class="w-12 h-12 rounded-2xl bg-soft-crimson/10 dark:bg-soft-coral/15 text-soft-crimson dark:text-soft-coral flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                <i data-lucide="circuit-board" class="w-6 h-6"></i>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-soft-lightMuted dark:bg-soft-darkMuted text-soft-crimson dark:text-soft-coral border border-soft-crimson/20">
+                                Max 2 Katmanlı
+                            </span>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2.5 group-hover:text-soft-crimson dark:group-hover:text-soft-coral transition-colors">İstek PCB Tasarımı</h3>
+                        <p class="text-sm text-soft-lightSubtext dark:text-soft-darkSubtext leading-relaxed">
+                            Projelerinize özel <strong>maksimum 2 katmanlı</strong> şematik çizim, temiz yol (track) yönlendirmesi ve üretime hazır Gerber dosyası hazırlama.
+                        </p>
+                    </div>
+                    <div class="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span class="text-xs font-medium text-soft-lightSubtext dark:text-soft-darkSubtext">1 & 2 Layer PCB</span>
+                        <a href="https://wa.me/905518836334?text=Merhaba,%20%C4%B0stek%20PCB%20Tasar%C4%B1m%C4%B1%20(Max%202%20Katmanl%C4%B1)%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1 text-xs font-semibold text-soft-crimson dark:text-soft-coral hover:underline">
+                            <span>Proje Gönder</span>
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Project Showcase: OT1019 (Kızılötesi özellikli Röle) -->
+    <section id="featured-project" class="py-16 sm:py-24 relative z-10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal">
+            <div class="rounded-3xl bg-soft-lightSurface dark:bg-soft-darkSurface border border-soft-crimson/25 dark:border-soft-coral/25 shadow-xl overflow-hidden relative">
+                <!-- Soft Decorative Accent Bar -->
+                <div class="h-1.5 w-full bg-gradient-to-r from-slate-700 via-soft-crimson to-soft-coral"></div>
+
+                <div class="p-6 sm:p-10 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+                    
+                    <!-- Left: Interactive PCB Visual Illustration for OT1019 -->
+                    <div class="lg:col-span-5">
+                        <div class="rounded-2xl bg-soft-lightMuted dark:bg-[#14171D] border border-slate-200/80 dark:border-slate-800 p-6 relative overflow-hidden group">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-soft-crimson text-white shadow-sm">
+                                    Donanım Projesi
+                                </span>
+                                <span class="text-xs font-mono text-soft-lightSubtext dark:text-soft-darkSubtext">OSHWLab • Open Hardware</span>
+                            </div>
+
+                            <!-- Stylized Clean PCB Card Illustration -->
+                            <div class="my-4 p-5 rounded-2xl bg-[#1C242B] text-slate-100 border border-slate-700/80 shadow-inner relative overflow-hidden">
+                                <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-3 h-3 rounded-full bg-soft-coral animate-pulse"></span>
+                                        <span class="font-mono font-bold text-sm tracking-wider text-white">MODEL: OT1019</span>
+                                    </div>
+                                    <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-emerald-400">IR RELAY v2</span>
+                                </div>
+                                
+                                <!-- PCB Traces SVG Diagram -->
+                                <svg class="w-full h-28" viewBox="0 0 280 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Board outline -->
+                                    <rect x="6" y="6" width="268" height="88" rx="10" stroke="#E04F52" stroke-width="1.5" stroke-dasharray="4 4"/>
+                                    <!-- Copper traces -->
+                                    <path d="M35 30 H95 L110 45 H165" stroke="#34D399" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M35 50 H85 L100 65 H165" stroke="#E04F52" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M35 70 H165" stroke="#60A5FA" stroke-width="2" stroke-linecap="round"/>
+                                    <!-- IR Receiver Block -->
+                                    <rect x="20" y="22" width="24" height="56" rx="5" fill="#2D3748" stroke="#9CA3AF" stroke-width="1.5"/>
+                                    <circle cx="32" cy="50" r="6" fill="#E04F52"/>
+                                    <!-- MCU / Logic Block -->
+                                    <rect x="112" y="34" width="32" height="32" rx="4" fill="#111827" stroke="#E04F52" stroke-width="1.5"/>
+                                    <text x="128" y="53" text-anchor="middle" fill="#F3F4F6" font-size="8" font-family="monospace">OT1019</text>
+                                    <!-- Relay Block -->
+                                    <rect x="172" y="20" width="84" height="60" rx="6" fill="#263238" stroke="#34D399" stroke-width="1.5"/>
+                                    <text x="214" y="47" text-anchor="middle" fill="#34D399" font-size="9" font-family="monospace" font-weight="bold">IR RÖLE</text>
+                                    <text x="214" y="60" text-anchor="middle" fill="#9CA3AF" font-size="7" font-family="monospace">YENİLENMİŞ</text>
+                                </svg>
+                            </div>
+
+                            <div class="flex items-center justify-between text-xs text-soft-lightSubtext dark:text-soft-darkSubtext pt-1">
+                                <span>Tasarım: Abdullah Özdemir</span>
+                                <span class="text-soft-crimson dark:text-soft-coral font-semibold">2 Katmanlı PCB</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Exact Requested Description & OSHWLab Link -->
+                    <div class="lg:col-span-7 space-y-5">
+                        <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-soft-crimson/10 dark:bg-soft-coral/15 text-soft-crimson dark:text-soft-coral text-xs font-bold">
+                            <i data-lucide="award" class="w-4 h-4"></i>
+                            <span>Öne Çıkan Donanım Tasarımı</span>
+                        </div>
+
+                        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                            OT1019 — Kızılötesi Özellikli Röle
+                        </h2>
+
+                        <!-- User's Exact Requested Statement -->
+                        <div class="p-5 sm:p-6 rounded-2xl bg-soft-lightMuted/80 dark:bg-soft-darkMuted/80 border-l-4 border-soft-crimson dark:border-soft-coral space-y-3">
+                            <p class="text-sm sm:text-base text-soft-lightText dark:text-soft-darkText leading-relaxed font-medium">
+                                "benim kendi ellerimle yapmış olduğum yenilenmiş model: <strong>OT1019 (Kızılötesi özellikli Röle)</strong> link ve detaylı açıklama 
+                                <a href="https://oshwlab.com/abdus16255/project_hzrajmwf" target="_blank" rel="noopener noreferrer" class="text-soft-crimson dark:text-soft-coral underline decoration-soft-crimson/50 hover:decoration-soft-crimson break-all font-semibold">
+                                    https://oshwlab.com/abdus16255/project_hzrajmwf
+                                </a> 
+                                sitesinde! takip edip projelerimi beğenirseniz bana çok destek olursunuz"
+                            </p>
+                        </div>
+
+                        <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+                            <a href="https://oshwlab.com/abdus16255/project_hzrajmwf" target="_blank" rel="noopener noreferrer" class="px-6 py-3.5 rounded-2xl bg-soft-crimson hover:bg-soft-crimsonHover dark:bg-soft-coral dark:hover:bg-soft-crimson text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2 active:scale-95">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                                <span>OSHWLab'da Projeyi İncele & Beğen</span>
+                            </a>
+                            <button onclick="copyProjectLink()" class="px-5 py-3.5 rounded-2xl bg-soft-lightMuted dark:bg-soft-darkMuted hover:bg-slate-200/70 dark:hover:bg-slate-700/70 text-soft-lightText dark:text-soft-darkText font-medium text-sm transition-colors flex items-center justify-center space-x-2">
+                                <i data-lucide="copy" class="w-4 h-4 text-soft-crimson dark:text-soft-coral"></i>
+                                <span id="copyBtnText">Proje Linkini Kopyala</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Recruitment / Announcement Section ("Ekip Arkadaşı İlanı") -->
+    <section id="recruitment" class="py-16 sm:py-24 relative z-10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal">
+            <div class="rounded-3xl bg-soft-lightSurface dark:bg-soft-darkSurface border-2 border-soft-crimson/30 dark:border-soft-coral/30 shadow-xl overflow-hidden relative">
+                <!-- Top Decorative Gradient Banner -->
+                <div class="bg-gradient-to-r from-soft-crimson to-slate-800 dark:from-soft-coral dark:to-slate-900 px-6 py-3 flex flex-wrap items-center justify-between gap-2 text-white">
+                    <div class="flex items-center space-x-2 text-xs sm:text-sm font-bold tracking-wide uppercase">
+                        <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
+                        <span>Aktif Ekip Arkadaşı İlanı • Kontenjan: 2 Kişi</span>
+                    </div>
+                    <span class="px-3 py-0.5 rounded-full bg-white/20 backdrop-blur-sm text-xs font-bold">
+                        Yaş Şartı: Min 14 — Max 16 Yaş
+                    </span>
+                </div>
+
+                <div class="p-6 sm:p-10 lg:p-12 space-y-8">
+                    <!-- Announcement Header -->
+                    <div class="max-w-3xl space-y-3">
+                        <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
+                            HVIDEA Ekibine Katılacak <span class="text-soft-crimson dark:text-soft-coral">2 Yol Arkadaşı</span> Arıyorum!
+                        </h2>
+                        <p class="text-sm sm:text-base text-soft-lightSubtext dark:text-soft-darkSubtext leading-relaxed">
+                            Projelerimizi birlikte büyütmek, üretmek ve teknoloji alanında kendimizi geliştirmek üzere yanıma <strong>2 kişi</strong> arıyorum. Başvuru yapacak adayların <strong>minimum 14, maksimum 16 yaşında</strong> olması gerekmektedir.
+                        </p>
+                    </div>
+
+                    <!-- Seriousness & Persistence Message + Italic Quote Box -->
+                    <div class="rounded-2xl bg-gradient-to-br from-slate-900 via-[#181B22] to-slate-900 dark:from-[#121418] dark:via-[#1E222B] dark:to-[#121418] text-white p-6 sm:p-8 border border-soft-crimson/40 shadow-lg relative overflow-hidden">
+                        <!-- Subtle Left Crimson Accent Strip -->
+                        <div class="absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b from-soft-crimson via-soft-coral to-slate-600"></div>
+                        
+                        <div class="space-y-4 pl-2 sm:pl-3">
+                            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-soft-crimson/20 border border-soft-crimson/40 text-soft-coral text-xs font-bold uppercase tracking-wider">
+                                <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+                                <span>Ciddiyet & Süreklilik İlkesi</span>
+                            </div>
+
+                            <p class="text-sm sm:text-base text-slate-200 leading-relaxed font-medium">
+                                Bu işi bir heves veya geçici bir uğraş olarak değil, <strong class="text-white">son derece ciddi ve uzun vadeli bir hedef</strong> olarak yürütüyorum. Bana yarı yolda bırakmayacak, sorumluluk bilinci yüksek, disiplinli ve öğrenme azmi <strong class="text-soft-coral">asla sönmeyecek</strong> gerçek yol arkadaşları lazım.
+                            </p>
+
+                            <!-- Italic Highlight Quote Frame -->
+                            <div class="pt-2">
+                                <div class="p-4 sm:p-5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <p class="italic font-semibold text-base sm:text-lg text-white tracking-wide flex items-center space-x-2.5">
+                                        <span class="w-2 h-2 rounded-full bg-soft-coral shrink-0"></span>
+                                        <span>"Heves, anlık bir aydınlanmadır."</span>
+                                    </p>
+                                    <span class="text-xs text-slate-400 font-medium sm:text-right">
+                                        Bize anlık parlamalar değil, kalıcı disiplin ve süreklilik gerek.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2 Open Positions Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Position 1: Arduino / ESP32 Developer -->
+                        <div class="soft-card p-6 rounded-2xl bg-soft-lightMuted/80 dark:bg-soft-darkMuted/80 border border-slate-200/80 dark:border-slate-700/80 flex flex-col justify-between space-y-4">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="w-11 h-11 rounded-2xl bg-soft-crimson/15 text-soft-crimson dark:text-soft-coral flex items-center justify-center">
+                                        <i data-lucide="cpu" class="w-6 h-6"></i>
+                                    </div>
+                                    <span class="text-xs font-bold px-3 py-1 rounded-full bg-soft-lightSurface dark:bg-soft-darkSurface text-soft-crimson dark:text-soft-coral border border-soft-crimson/20">
+                                        1. Pozisyon
+                                    </span>
+                                </div>
+                                <h3 class="text-lg sm:text-xl font-bold">Arduino & ESP32 Geliştiricisi</h3>
+                                <p class="text-sm text-soft-lightSubtext dark:text-soft-darkSubtext leading-relaxed">
+                                    <strong>Arduino, ESP32</strong> gibi geliştirme kartlarını kodlayabilen, sensör ve modüllerle çalışmayı seven, donanım projelerinde yazılım desteği sağlayabilecek ekip arkadaşı.
+                                </p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-200/70 dark:border-slate-700/70 flex items-center justify-between text-xs font-medium text-soft-lightSubtext dark:text-soft-darkSubtext">
+                                <span>Yaş: 14 - 16</span>
+                                <span class="text-soft-crimson dark:text-soft-coral font-semibold">Deneyim Süresi Belirtilmeli</span>
+                            </div>
+                        </div>
+
+                        <!-- Position 2: Sales & Operations Manager -->
+                        <div class="soft-card p-6 rounded-2xl bg-soft-lightMuted/80 dark:bg-soft-darkMuted/80 border border-slate-200/80 dark:border-slate-700/80 flex flex-col justify-between space-y-4">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="w-11 h-11 rounded-2xl bg-soft-crimson/15 text-soft-crimson dark:text-soft-coral flex items-center justify-center">
+                                        <i data-lucide="trending-up" class="w-6 h-6"></i>
+                                    </div>
+                                    <span class="text-xs font-bold px-3 py-1 rounded-full bg-soft-lightSurface dark:bg-soft-darkSurface text-soft-crimson dark:text-soft-coral border border-soft-crimson/20">
+                                        2. Pozisyon
+                                    </span>
+                                </div>
+                                <h3 class="text-lg sm:text-xl font-bold">Satış İşleri Yöneticisi</h3>
+                                <p class="text-sm text-soft-lightSubtext dark:text-soft-darkSubtext leading-relaxed">
+                                    Geliştirdiğimiz ürün ve hizmetlerin <strong>satış işlerini yönetebilen</strong>, müşteri iletişimini güçlü şekilde yürütebilecek, ikna kabiliyeti yüksek ve sorumluluk sahibi ekip arkadaşı.
+                                </p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-200/70 dark:border-slate-700/70 flex items-center justify-between text-xs font-medium text-soft-lightSubtext dark:text-soft-darkSubtext">
+                                <span>Yaş: 14 - 16</span>
+                                <span class="text-soft-crimson dark:text-soft-coral font-semibold">Deneyim Süresi Belirtilmeli</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Application Instructions & Direct WhatsApp Apply CTA -->
+                    <div class="p-6 rounded-2xl bg-soft-crimson/5 dark:bg-soft-coral/10 border border-soft-crimson/25 dark:border-soft-coral/25 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                        <div class="space-y-2 max-w-2xl">
+                            <div class="flex items-center space-x-2 text-soft-crimson dark:text-soft-coral font-bold text-sm">
+                                <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
+                                <span>Nasıl Başvuru Yapılır?</span>
+                            </div>
+                            <p class="text-sm sm:text-base text-soft-lightText dark:text-soft-darkText leading-relaxed">
+                                Başvuru için alttaki <strong>WhatsApp hattına</strong> basarak <strong>kendinizden bahsediniz</strong>, yaşınızı (minimum 14, maksimum 16 yaş) ve <strong>ne kadardır bu deneyimi yaptığınızı</strong> belirtiniz.
+                            </p>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
+                            <a href="https://wa.me/905518836334?text=Merhaba%20Abdullah%20Bey,%20HVIDEA%20ekip%20ilan%C4%B1%20i%C3%A7in%20ba%C5%9Fvurmak%20istiyorum.%0A-%20Ad%C4%B1m%20Soyad%C4%B1m:%20%0A-%20Ya%C5%9F%C4%B1m%20(14-16):%20%0A-%20Ba%C5%9Fvurdu%C4%9Fum%20Alan%20(Arduino-ESP32%20/%20Sat%C4%B1%C5%9F):%20%0A-%20Ne%20kadard%C4%B1r%20bu%20deneyimi%20yap%C4%B1yorum:%20%0A-%20Kendimden%20k%C4%B1saca%20bahsedeyim:%20" target="_blank" rel="noopener noreferrer" class="px-6 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2.5 active:scale-95">
+                                <i data-lucide="message-circle" class="w-5 h-5"></i>
+                                <span>WhatsApp Hattına Bas ve Başvur (0551 883 6334)</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About & Founder Purpose ("Amacım") Section -->
+    <section id="about" class="py-16 sm:py-24 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center reveal">
+                
+                <!-- Left Info -->
+                <div class="lg:col-span-6 space-y-5">
+                    <span class="inline-block px-3.5 py-1 rounded-full bg-soft-crimson/10 text-soft-crimson dark:bg-soft-coral/15 dark:text-soft-coral text-xs font-semibold uppercase tracking-wider">
+                        Amacım & Vizyonum
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
+                        Bursa / Kestel'de Güvenilir Teknoloji Çözüm Ortağınız
+                    </h2>
+                    <div class="p-5 rounded-2xl bg-soft-lightSurface dark:bg-soft-darkSurface border-l-4 border-soft-crimson dark:border-soft-coral shadow-sm">
+                        <p class="text-sm sm:text-base text-soft-lightText dark:text-soft-darkText leading-relaxed font-medium">
+                            "Teknolojiyi herkes için ulaşılabilir, anlaşılır ve sorunsuz hale getirmek için çalışıyorum. Kendi tasarladığım devrelerden bilgisayar servisine kadar her işte kalite önceliğimdir. Tek başıma bile olsam elimden geldiği kadar teknoloji severlere hizmet etmeyi hedefliyorum."
+                        </p>
+                    </div>
+                    <p class="text-sm sm:text-base text-soft-lightSubtext dark:text-soft-darkSubtext leading-relaxed">
+                        <strong>HVIDEA</strong>, kurucusu <strong>Abdullah Özdemir</strong>'in donanım ve yazılım tutkusundan doğan bir teknoloji girişimidir. İster bilgisayar bakım ve tamiri olsun, ister özel yazılım ya da maksimum 2 katmanlı özgün bir PCB devresi; her projeye aynı özenle yaklaşıyoruz.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div class="p-4 rounded-2xl bg-soft-lightSurface dark:bg-soft-darkSurface border border-slate-200/80 dark:border-slate-800 flex items-start space-x-3">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-soft-crimson dark:text-soft-coral shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">Şeffaf ve Hızlı İletişim</h4>
+                                <p class="text-xs text-soft-lightSubtext dark:text-soft-darkSubtext mt-1">WhatsApp hattımız üzerinden doğrudan bilgi ve destek.</p>
+                            </div>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-soft-lightSurface dark:bg-soft-darkSurface border border-slate-200/80 dark:border-slate-800 flex items-start space-x-3">
+                            <i data-lucide="cpu" class="w-5 h-5 text-soft-crimson dark:text-soft-coral shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">Pratik Donanım Çözümleri</h4>
+                                <p class="text-xs text-soft-lightSubtext dark:text-soft-darkSubtext mt-1">Üretime uygun 1-2 katmanlı PCB ve prototipleme.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Founder Card -->
+                <div class="lg:col-span-6">
+                    <div class="bg-soft-lightSurface dark:bg-soft-darkSurface rounded-3xl p-7 sm:p-9 border border-slate-200/80 dark:border-slate-800 shadow-lg space-y-6">
+                        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 text-center sm:text-left">
+                            <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-soft-crimson to-slate-800 flex items-center justify-center text-white font-black text-2xl shadow-md shrink-0">
+                                AÖ
+                            </div>
+                            <div>
+                                <div class="inline-block px-2.5 py-0.5 rounded-md bg-soft-lightMuted dark:bg-soft-darkMuted text-xs font-semibold text-soft-crimson dark:text-soft-coral mb-1">
+                                    Kurucu & Tasarımcı
+                                </div>
+                                <h3 class="text-xl sm:text-2xl font-bold">Abdullah Özdemir</h3>
+                                <p class="text-sm text-soft-lightSubtext dark:text-soft-darkSubtext flex items-center justify-center sm:justify-start gap-1.5 mt-1">
+                                    <i data-lucide="map-pin" class="w-4 h-4 text-soft-crimson dark:text-soft-coral"></i>
+                                    <span>Bursa / Kestel, Türkiye</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <blockquote class="p-4 rounded-2xl bg-soft-lightMuted/70 dark:bg-soft-darkMuted/70 text-sm text-soft-lightSubtext dark:text-soft-darkSubtext italic leading-relaxed">
+                            "Teknolojiyi herkes için ulaşılabilir, anlaşılır ve sorunsuz hale getirmek için çalışıyorum. Kendi tasarladığım devrelerden bilgisayar servisine kadar her işte kalite önceliğimdir. Tek başıma bile olsam elimden geldiği kadar teknoloji severlere hizmet etmeyi hedefliyorum."
+                        </blockquote>
+
+                        <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <div class="text-xs text-soft-lightSubtext dark:text-soft-darkSubtext">
+                                Doğrudan WhatsApp Hattı: <strong class="text-soft-lightText dark:text-soft-darkText">0551 883 6334</strong>
+                            </div>
+                            <a href="https://wa.me/905518836334?text=Merhaba%20Abdullah%20Bey,%20projem%20veya%20bilgisayar%20servisi%20i%C3%A7in%20g%C3%B6r%C3%BC%C5%9Fmek%20istiyorum." target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1.5 text-sm font-semibold text-soft-crimson dark:text-soft-coral hover:underline">
+                                <span>Mesaj Gönder</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Quick WhatsApp Quote Section -->
+    <section id="contact" class="py-16 sm:py-24 relative z-10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal">
+            <div class="text-center max-w-2xl mx-auto space-y-3 mb-12">
+                <span class="inline-block px-3.5 py-1 rounded-full bg-soft-crimson/10 text-soft-crimson dark:bg-soft-coral/15 dark:text-soft-coral text-xs font-semibold uppercase tracking-wider">
+                    İletişim
+                </span>
+                <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
+                    Hızlı İletişim & WhatsApp Hattı
+                </h2>
+                <p class="text-sm sm:text-base text-soft-lightSubtext dark:text-soft-darkSubtext">
+                    Aşağıdaki formu doldurarak mesajınızı tek tıkla WhatsApp üzerinden Abdullah Özdemir'e iletebilirsiniz.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Left Contact Info Cards -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="p-6 rounded-3xl bg-soft-lightSurface dark:bg-soft-darkSurface border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-5">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-11 h-11 rounded-2xl bg-soft-crimson/10 dark:bg-soft-coral/15 text-soft-crimson dark:text-soft-coral flex items-center justify-center shrink-0">
+                                <i data-lucide="phone" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm">WhatsApp & Telefon</h4>
+                                <a href="https://wa.me/905518836334" target="_blank" rel="noopener noreferrer" class="text-base font-bold text-soft-crimson dark:text-soft-coral hover:underline mt-0.5 block">
+                                    0551 883 6334
+                                </a>
+                                <p class="text-xs text-soft-lightSubtext dark:text-soft-darkSubtext mt-0.5">Abdullah Özdemir</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-11 h-11 rounded-2xl bg-soft-crimson/10 dark:bg-soft-coral/15 text-soft-crimson dark:text-soft-coral flex items-center justify-center shrink-0">
+                                <i data-lucide="map-pin" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm">Konum</h4>
+                                <p class="text-sm font-medium mt-0.5">Bursa / Kestel</p>
+                                <p class="text-xs text-soft-lightSubtext dark:text-soft-darkSubtext mt-0.5">Yerinde & Uzaktan Destek</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-11 h-11 rounded-2xl bg-soft-crimson/10 dark:bg-soft-coral/15 text-soft-crimson dark:text-soft-coral flex items-center justify-center shrink-0">
+                                <i data-lucide="cpu" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm">OSHWLab Profili</h4>
+                                <a href="https://oshwlab.com/abdus16255/project_hzrajmwf" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-soft-crimson dark:text-soft-coral hover:underline mt-0.5 block">
+                                    OT1019 Kızılötesi Özellikli Röle →
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="pt-2">
+                            <a href="https://wa.me/905518836334?text=Merhaba%20Abdullah%20Bey,%20HVIDEA%20web%20sitesinden%20ula%C5%9F%C4%B1yorum." target="_blank" rel="noopener noreferrer" class="w-full py-3.5 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition-all flex items-center justify-center space-x-2 active:scale-95">
+                                <i data-lucide="message-circle" class="w-5 h-5"></i>
+                                <span>Direkt WhatsApp Sohbeti Başlat</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Interactive WhatsApp Message Builder Form -->
+                <div class="lg:col-span-7">
+                    <form id="whatsappForm" onsubmit="sendToWhatsApp(event)" class="p-6 sm:p-8 rounded-3xl bg-soft-lightSurface dark:bg-soft-darkSurface border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label for="userName" class="text-xs font-semibold text-soft-lightSubtext dark:text-soft-darkSubtext">Adınız Soyadınız</label>
+                                <input type="text" id="userName" required placeholder="Örn: Ahmet Yılmaz" class="w-full px-4 py-3 rounded-2xl bg-soft-lightMuted dark:bg-soft-darkMuted border border-slate-200/80 dark:border-slate-700/80 focus:border-soft-crimson dark:focus:border-soft-coral focus:outline-none text-sm transition-colors">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label for="serviceSelect" class="text-xs font-semibold text-soft-lightSubtext dark:text-soft-darkSubtext">Konu / Hizmet Seçimi</label>
+                                <select id="serviceSelect" class="w-full px-4 py-3 rounded-2xl bg-soft-lightMuted dark:bg-soft-darkMuted border border-slate-200/80 dark:border-slate-700/80 focus:border-soft-crimson dark:focus:border-soft-coral focus:outline-none text-sm transition-colors">
+                                    <option value="Yazılım Geliştirme">Yazılım Geliştirme</option>
+                                    <option value="Bilgisayar Tamiri">Bilgisayar Tamiri</option>
+                                    <option value="Bilgisayar Bakımı">Bilgisayar Bakımı</option>
+                                    <option value="İstek PCB Tasarımı (Max 2 Katmanlı)">İstek PCB Tasarımı (Max 2 Katmanlı)</option>
+                                    <option value="Ekip Başvurusu: Arduino / ESP32 Geliştirici (14-16 Yaş)">Ekip Başvurusu: Arduino / ESP32 Geliştirici (14-16 Yaş)</option>
+                                    <option value="Ekip Başvurusu: Satış İşleri Yöneticisi (14-16 Yaş)">Ekip Başvurusu: Satış İşleri Yöneticisi (14-16 Yaş)</option>
+                                    <option value="OT1019 Röle Projesi Hakkında">OT1019 Röle Projesi Hakkında</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="userMessage" class="text-xs font-semibold text-soft-lightSubtext dark:text-soft-darkSubtext">Kısa Açıklama / Mesajınız</label>
+                            <textarea id="userMessage" rows="3" required placeholder="Talep ettiğiniz hizmeti veya ekip başvurusu yapıyorsanız yaşınızı, deneyiminizi ve kendinizi kısaca yazın..." class="w-full px-4 py-3 rounded-2xl bg-soft-lightMuted dark:bg-soft-darkMuted border border-slate-200/80 dark:border-slate-700/80 focus:border-soft-crimson dark:focus:border-soft-coral focus:outline-none text-sm transition-colors"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 px-6 rounded-2xl bg-soft-crimson hover:bg-soft-crimsonHover dark:bg-soft-coral dark:hover:bg-soft-crimson text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2 active:scale-95">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>WhatsApp ile Mesajı Gönder</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-200/80 dark:border-slate-800/80 bg-soft-lightSurface/60 dark:bg-soft-darkSurface/60 py-10 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <div>
+                <div class="font-black text-lg tracking-wider">
+                    H<span class="text-soft-crimson dark:text-soft-coral">V</span>IDEA
+                </div>
+                <p class="text-xs text-soft-lightSubtext dark:text-soft-darkSubtext mt-1">
+                    Abdullah Özdemir • Bursa / Kestel • WhatsApp: 0551 883 6334
+                </p>
+            </div>
+            <div class="flex items-center space-x-5 text-xs font-medium text-soft-lightSubtext dark:text-soft-darkSubtext">
+                <a href="#services" class="hover:text-soft-crimson dark:hover:text-soft-coral transition-colors">Hizmetler</a>
+                <a href="#featured-project" class="hover:text-soft-crimson dark:hover:text-soft-coral transition-colors">OT1019 Projesi</a>
+                <a href="https://oshwlab.com/abdus16255/project_hzrajmwf" target="_blank" rel="noopener noreferrer" class="hover:text-soft-crimson dark:hover:text-soft-coral transition-colors">OSHWLab</a>
+            </div>
+            <p class="text-xs text-soft-lightSubtext dark:text-soft-darkSubtext">
+                &copy; 2026 HVIDEA. Tüm hakları saklıdır.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Floating Soft WhatsApp Button (Mobile & Desktop Friendly) -->
+    <a href="https://wa.me/905518836334?text=Merhaba%20Abdullah%20Bey,%20HVIDEA%20hizmetleri%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener noreferrer" aria-label="WhatsApp İletişim" class="fixed bottom-5 right-5 z-40 flex items-center space-x-2.5 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 group">
+        <i data-lucide="message-circle" class="w-5 h-5"></i>
+        <span class="text-xs font-bold hidden sm:inline">WhatsApp Destek</span>
+    </a>
+
+    <!-- Non-intrusive Soft Notification Toast -->
+    <div id="softToast" class="fixed bottom-20 right-5 z-50 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-soft-lightSurface dark:bg-soft-darkSurface border border-soft-crimson/30 text-soft-lightText dark:text-soft-darkText px-5 py-3.5 rounded-2xl shadow-xl flex items-center space-x-3">
+        <i data-lucide="check-circle" class="w-5 h-5 text-soft-crimson dark:text-soft-coral shrink-0"></i>
+        <span id="toastMessage" class="text-xs sm:text-sm font-medium">İşlem tamamlandı.</span>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Theme Management (Soft Light Default, Seamless Toggle to Soft Dark)
+        const htmlEl = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Check saved theme preference
+        const savedTheme = localStorage.getItem('hvidea-theme');
+        if (savedTheme === 'dark') {
+            htmlEl.classList.remove('light');
+            htmlEl.classList.add('dark');
+        } else {
+            htmlEl.classList.remove('dark');
+            htmlEl.classList.add('light');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (htmlEl.classList.contains('dark')) {
+                htmlEl.classList.remove('dark');
+                htmlEl.classList.add('light');
+                localStorage.setItem('hvidea-theme', 'light');
+            } else {
+                htmlEl.classList.remove('light');
+                htmlEl.classList.add('dark');
+                localStorage.setItem('hvidea-theme', 'dark');
+            }
+        });
+
+        // Mobile Navigation Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuIconOpen = document.getElementById('menuIconOpen');
+        const menuIconClose = document.getElementById('menuIconClose');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            const isHidden = mobileMenu.classList.contains('hidden');
+            if (isHidden) {
+                mobileMenu.classList.remove('hidden');
+                menuIconOpen.classList.add('hidden');
+                menuIconClose.classList.remove('hidden');
+            } else {
+                mobileMenu.classList.add('hidden');
+                menuIconOpen.classList.remove('hidden');
+                menuIconClose.classList.add('hidden');
+            }
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                menuIconOpen.classList.remove('hidden');
+                menuIconClose.classList.add('hidden');
+            });
+        });
+
+        // Scroll Reveal Observer for Smooth Animations
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.12 });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // Soft Toast Notification Helper
+        function showToast(msg) {
+            const toast = document.getElementById('softToast');
+            const toastMsg = document.getElementById('toastMessage');
+            toastMsg.textContent = msg;
+            toast.classList.remove('translate-y-10', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+            }, 3000);
+        }
+
+        // Copy OSHWLab Project Link
+        function copyProjectLink() {
+            const url = 'https://oshwlab.com/abdus16255/project_hzrajmwf';
+            const tempInput = document.createElement('input');
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            const copyBtnText = document.getElementById('copyBtnText');
+            copyBtnText.textContent = 'Kopyalandı!';
+            showToast('OT1019 proje linki panoya kopyalandı.');
+            setTimeout(() => {
+                copyBtnText.textContent = 'Proje Linkini Kopyala';
+            }, 2500);
+        }
+
+        // WhatsApp Form Submission
+        function sendToWhatsApp(event) {
+            event.preventDefault();
+            const name = document.getElementById('userName').value.trim();
+            const service = document.getElementById('serviceSelect').value;
+            const message = document.getElementById('userMessage').value.trim();
+
+            const fullText = `Merhaba Abdullah Bey, ben ${name}.\nHizmet Talebi: ${service}\nDetay: ${message}`;
+            const encodedText = encodeURIComponent(fullText);
+
+            showToast('WhatsApp sohbeti açılıyor...');
+            setTimeout(() => {
+                window.open(`https://wa.me/905518836334?text=${encodedText}`, '_blank', 'noopener,noreferrer');
+            }, 600);
+        }
+
+        // Gentle, Eye-Friendly Ambient Floating Nodes Canvas
+        const canvas = document.getElementById('ambientCanvas');
+        const ctx = canvas.getContext('2d');
+        let nodes = [];
+
+        function resizeAmbientCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeAmbientCanvas);
+        resizeAmbientCanvas();
+
+        const nodeCount = window.innerWidth < 640 ? 18 : 32;
+        for (let i = 0; i < nodeCount; i++) {
+            nodes.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 2 + 1,
+                vx: (Math.random() - 0.5) * 0.35,
+                vy: (Math.random() - 0.5) * 0.35
+            });
+        }
+
+        function drawAmbientNodes() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const isDark = htmlEl.classList.contains('dark');
+            const dotColor = isDark ? 'rgba(224, 79, 82, 0.25)' : 'rgba(217, 56, 58, 0.20)';
+            const lineBase = isDark ? '224, 79, 82' : '217, 56, 58';
+
+            for (let i = 0; i < nodes.length; i++) {
+                const n1 = nodes[i];
+                n1.x += n1.vx;
+                n1.y += n1.vy;
+
+                if (n1.x < 0 || n1.x > canvas.width) n1.vx *= -1;
+                if (n1.y < 0 || n1.y > canvas.height) n1.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(n1.x, n1.y, n1.r, 0, Math.PI * 2);
+                ctx.fillStyle = dotColor;
+                ctx.fill();
+
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const n2 = nodes[j];
+                    const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
+                    if (dist < 130) {
+                        ctx.beginPath();
+                        ctx.moveTo(n1.x, n1.y);
+                        ctx.lineTo(n2.x, n2.y);
+                        ctx.strokeStyle = `rgba(${lineBase}, ${0.09 * (1 - dist / 130)})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(drawAmbientNodes);
+        }
+
+        window.addEventListener('load', () => {
+            drawAmbientNodes();
+        });
+    </script>
+</body>
+</html>
